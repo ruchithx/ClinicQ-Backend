@@ -1,0 +1,2 @@
+# prod profile: nothing relaxed. Fail-fast checks (seed location, insecure cookie) are
+# enforced by ProdProfileGuard (ApplicationRunner).

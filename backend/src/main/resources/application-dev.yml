@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/dms}
+    username: ${DB_USERNAME:dms}
+    password: ${DB_PASSWORD:dms_dev_password}
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed
+    user: ${DB_USERNAME:dms}
+    password: ${DB_PASSWORD:dms_dev_password}
+logging:
+  structured.format.console: ""
+  level:
+    org.hibernate.SQL: info
+app:
+  jwt:
+    # base64("dev-only-secret-change-me-0123456789abcdef")
+    secret: ${APP_JWT_SECRET:ZGV2LW9ubHktc2VjcmV0LWNoYW5nZS1tZS0wMTIzNDU2Nzg5YWJjZGVm}
+  refresh-cookie.secure: ${APP_REFRESH_COOKIE_SECURE:false}
+  swagger.enabled: ${APP_SWAGGER_ENABLED:true}
+  cors.allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000}
