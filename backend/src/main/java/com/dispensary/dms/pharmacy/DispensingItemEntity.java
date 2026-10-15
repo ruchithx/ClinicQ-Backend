@@ -61,6 +61,11 @@ public class DispensingItemEntity {
         return dispensingId;
     }
 
+    /** Mirrors the join column in memory; the column itself is written by the parent's collection. */
+    void setDispensingId(UUID dispensingId) {
+        this.dispensingId = dispensingId;
+    }
+
     public UUID getPrescriptionId() {
         return prescriptionId;
     }

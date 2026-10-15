@@ -12,7 +12,8 @@ public interface MedicineRepository extends JpaRepository<MedicineEntity, UUID> 
 
     @Query("""
             select m from MedicineEntity m
-            where (:search is null or lower(m.name) like lower(concat('%', :search, '%')))
+            where (cast(:search as String) is null
+                   or lower(m.name) like lower(concat('%', cast(:search as String), '%')))
               and (:active is null or m.active = :active)
             """)
     Page<MedicineEntity> search(@Param("search") String search,

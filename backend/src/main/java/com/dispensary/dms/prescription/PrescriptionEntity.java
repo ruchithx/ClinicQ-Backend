@@ -9,20 +9,32 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import org.hibernate.annotations.Generated;
 import org.hibernate.generator.EventType;
+import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/** Prescription header (table {@code prescriptions}). */
+/**
+ * Prescription header (table {@code prescriptions}). Implements {@link Persistable} because the id
+ * is assigned up front and the primitive {@code @Version} cannot signal "new", so Spring Data would
+ * otherwise merge instead of persist and fail to cascade the new items.
+ */
 @Entity
 @Table(name = "prescriptions")
-public class PrescriptionEntity {
+public class PrescriptionEntity implements Persistable<UUID> {
+
+    @Transient
+    private boolean persisted;
 
     @Id
     @Column(name = "id")
@@ -74,15 +86,32 @@ public class PrescriptionEntity {
     private long version;
 
     @OneToMany(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "prescription_id")
+    @JoinColumn(name = "prescription_id", nullable = false, updatable = false)
     @OrderBy("lineNumber")
     private List<PrescriptionItemEntity> items = new ArrayList<>();
 
     protected PrescriptionEntity() {
     }
 
+    @Override
     public UUID getId() {
         return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return !persisted;
+    }
+
+    @PostLoad
+    @PostPersist
+    void markPersisted() {
+        this.persisted = true;
+    }
+
+    @PrePersist
+    void linkItems() {
+        items.forEach(i -> i.setPrescriptionId(id));
     }
 
     public void setId(UUID id) {

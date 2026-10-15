@@ -88,6 +88,11 @@ public class PrescriptionItemEntity {
         return prescriptionId;
     }
 
+    /** Mirrors the join column in memory; the column itself is written by the parent's collection. */
+    void setPrescriptionId(UUID prescriptionId) {
+        this.prescriptionId = prescriptionId;
+    }
+
     public short getLineNumber() {
         return lineNumber;
     }

@@ -48,6 +48,11 @@ public class ConsultationDiagnosisEntity {
         return consultationId;
     }
 
+    /** Mirrors the join column in memory; the column itself is written by the parent's collection. */
+    void setConsultationId(UUID consultationId) {
+        this.consultationId = consultationId;
+    }
+
     public short getLineNumber() {
         return lineNumber;
     }

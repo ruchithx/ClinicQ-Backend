@@ -21,7 +21,7 @@ public interface QueueSessionRepository extends JpaRepository<QueueSessionEntity
 
     @Query("""
             select s from QueueSessionEntity s
-            where (:date is null or s.sessionDate = :date)
+            where (cast(:date as LocalDate) is null or s.sessionDate = :date)
               and (:status is null or s.status = :status)
             """)
     Page<QueueSessionEntity> search(@Param("date") LocalDate date,

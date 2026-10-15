@@ -7,19 +7,31 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import org.hibernate.annotations.Immutable;
+import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/** A doctor-patient encounter (table {@code consultations}); insert-only. */
+/**
+ * A doctor-patient encounter (table {@code consultations}); insert-only. Implements
+ * {@link Persistable} because the id is assigned up front and there is no {@code @Version}, so
+ * Spring Data would otherwise merge instead of persist and fail to cascade the new diagnoses.
+ */
 @Entity
 @Immutable
 @Table(name = "consultations")
-public class ConsultationEntity {
+public class ConsultationEntity implements Persistable<UUID> {
+
+    @Transient
+    private boolean persisted;
 
     @Id
     @Column(name = "id")
@@ -47,15 +59,32 @@ public class ConsultationEntity {
     private Instant createdAt;
 
     @OneToMany(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "consultation_id")
+    @JoinColumn(name = "consultation_id", nullable = false, updatable = false)
     @OrderBy("lineNumber")
     private List<ConsultationDiagnosisEntity> diagnoses = new ArrayList<>();
 
     protected ConsultationEntity() {
     }
 
+    @Override
     public UUID getId() {
         return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return !persisted;
+    }
+
+    @PostLoad
+    @PostPersist
+    void markPersisted() {
+        this.persisted = true;
+    }
+
+    @PrePersist
+    void linkDiagnoses() {
+        diagnoses.forEach(d -> d.setConsultationId(id));
     }
 
     public void setId(UUID id) {
