@@ -41,7 +41,7 @@ public class BookingController {
     }
 
     @GetMapping("/queue-sessions/{queueSessionId}/entries")
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<PageResponse<QueueEntryResponse>> listQueueEntries(
             @PathVariable UUID queueSessionId,
             @RequestParam(defaultValue = "0") @Min(0) int page,
@@ -51,7 +51,7 @@ public class BookingController {
     }
 
     @PostMapping(path = "/queue-sessions/{queueSessionId}/entries", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<QueueEntryResponse> createBooking(
             @PathVariable UUID queueSessionId,
             @RequestHeader("Idempotency-Key") String idempotencyKey,
@@ -66,7 +66,7 @@ public class BookingController {
     }
 
     @PostMapping(path = "/queue-entries/{queueEntryId}/cancel", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<QueueEntryResponse> cancelBooking(@PathVariable UUID queueEntryId,
                                                            @Valid @RequestBody CancelBookingRequest request,
                                                            CurrentUser principal) {

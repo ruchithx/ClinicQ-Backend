@@ -27,14 +27,14 @@ public class QueueEntryController {
     }
 
     @GetMapping("/{queueEntryId}")
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<QueueEntryResponse> getQueueEntry(@PathVariable UUID queueEntryId) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
                 .body(entryService.getEntry(queueEntryId));
     }
 
     @PostMapping("/{queueEntryId}/call")
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<QueueEntryResponse> callQueueEntry(@PathVariable UUID queueEntryId,
                                                             CurrentUser principal) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
@@ -42,7 +42,7 @@ public class QueueEntryController {
     }
 
     @PostMapping("/{queueEntryId}/complete")
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<QueueEntryResponse> completeQueueEntry(@PathVariable UUID queueEntryId,
                                                                 CurrentUser principal) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
@@ -50,7 +50,7 @@ public class QueueEntryController {
     }
 
     @PostMapping(path = "/{queueEntryId}/skip", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<QueueEntryResponse> skipQueueEntry(
             @PathVariable UUID queueEntryId,
             @RequestBody(required = false) SkipQueueEntryRequest request,
@@ -60,7 +60,7 @@ public class QueueEntryController {
     }
 
     @PostMapping("/{queueEntryId}/requeue")
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<QueueEntryResponse> requeueQueueEntry(@PathVariable UUID queueEntryId,
                                                                CurrentUser principal) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())

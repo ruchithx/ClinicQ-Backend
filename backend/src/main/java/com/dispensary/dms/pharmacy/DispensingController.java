@@ -33,7 +33,7 @@ public class DispensingController {
     }
 
     @PostMapping("/{prescriptionId}/start")
-    @PreAuthorize("hasAnyRole('PHARMACIST')")
+    @PreAuthorize("hasAnyRole('PHARMACIST', 'ADMIN')")
     public ResponseEntity<PrescriptionResponse> startPrescription(@PathVariable UUID prescriptionId,
                                                                  CurrentUser principal) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
@@ -41,7 +41,7 @@ public class DispensingController {
     }
 
     @PostMapping(path = "/{prescriptionId}/dispense", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('PHARMACIST')")
+    @PreAuthorize("hasAnyRole('PHARMACIST', 'ADMIN')")
     public ResponseEntity<PrescriptionResponse> dispensePrescription(
             @PathVariable UUID prescriptionId,
             @RequestHeader("Idempotency-Key") String idempotencyKey,

@@ -40,7 +40,7 @@ public class QueueSessionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<PageResponse<QueueSessionResponse>> listQueueSessions(
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) QueueSessionStatus status,
@@ -51,7 +51,7 @@ public class QueueSessionController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<QueueSessionResponse> createQueueSession(
             @Valid @RequestBody CreateQueueSessionRequest request, CurrentUser principal) {
         QueueSessionResponse created = sessionService.create(request, principal);
@@ -60,7 +60,7 @@ public class QueueSessionController {
     }
 
     @GetMapping("/{queueSessionId}")
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<QueueSessionResponse> getQueueSession(
             @PathVariable UUID queueSessionId,
             @RequestHeader(name = "If-None-Match", required = false) String ifNoneMatch) {
@@ -73,7 +73,7 @@ public class QueueSessionController {
     }
 
     @PostMapping("/{queueSessionId}/open")
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<QueueSessionResponse> openQueueSession(@PathVariable UUID queueSessionId,
                                                                 CurrentUser principal) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
@@ -81,7 +81,7 @@ public class QueueSessionController {
     }
 
     @PostMapping(path = "/{queueSessionId}/close", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<QueueSessionResponse> closeQueueSession(
             @PathVariable UUID queueSessionId,
             @RequestBody(required = false) CloseQueueSessionRequest request,
@@ -93,7 +93,7 @@ public class QueueSessionController {
     }
 
     @PostMapping(path = "/{queueSessionId}/call-next", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<CallNextResponse> callNextPatient(@PathVariable UUID queueSessionId,
                                                            @Valid @RequestBody CallNextRequest request,
                                                            CurrentUser principal) {

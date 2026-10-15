@@ -35,7 +35,7 @@ public class ConsultationController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<ConsultationResponse> createConsultation(
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @Valid @RequestBody CreateConsultationRequest request,
@@ -50,7 +50,7 @@ public class ConsultationController {
     }
 
     @GetMapping("/{consultationId}")
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<ConsultationResponse> getConsultation(@PathVariable UUID consultationId,
                                                                CurrentUser principal) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())

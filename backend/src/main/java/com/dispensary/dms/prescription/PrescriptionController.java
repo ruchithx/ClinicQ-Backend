@@ -45,7 +45,7 @@ public class PrescriptionController {
 
     @PostMapping(path = "/consultations/{consultationId}/prescriptions",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR','ADMIN')")
     public ResponseEntity<PrescriptionResponse> addPrescriptionToConsultation(
             @PathVariable UUID consultationId,
             @RequestHeader("Idempotency-Key") String idempotencyKey,
@@ -61,7 +61,7 @@ public class PrescriptionController {
     }
 
     @GetMapping("/prescriptions")
-    @PreAuthorize("hasAnyRole('PHARMACIST', 'DOCTOR')")
+    @PreAuthorize("hasAnyRole('PHARMACIST', 'DOCTOR','ADMIN')")
     public ResponseEntity<PageResponse<PrescriptionSummary>> listPrescriptions(
             @RequestParam(required = false) List<PrescriptionStatus> status,
             @RequestParam(required = false) UUID patientId,
@@ -74,7 +74,7 @@ public class PrescriptionController {
     }
 
     @GetMapping("/prescriptions/{prescriptionId}")
-    @PreAuthorize("hasAnyRole('PHARMACIST', 'DOCTOR')")
+    @PreAuthorize("hasAnyRole('PHARMACIST', 'DOCTOR', 'ADMIN')")
     public ResponseEntity<PrescriptionResponse> getPrescription(@PathVariable UUID prescriptionId,
                                                                CurrentUser principal) {
         PrescriptionResponse response = prescriptionService.get(prescriptionId, principal);
@@ -86,7 +86,7 @@ public class PrescriptionController {
 
     @PostMapping(path = "/prescriptions/{prescriptionId}/cancel",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PHARMACIST', 'ADMIN')")
     public ResponseEntity<PrescriptionResponse> cancelPrescription(
             @PathVariable UUID prescriptionId,
             @Valid @RequestBody CancelPrescriptionRequest request,

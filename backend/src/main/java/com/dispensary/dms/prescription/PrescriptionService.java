@@ -97,7 +97,7 @@ public class PrescriptionService {
         ConsultationEntity consultation = consultationRepository.findById(consultationId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CONSULTATION_NOT_FOUND,
                         "Consultation not found"));
-        if (!consultation.getDoctorId().equals(actor.id())) {
+        if (!actor.isAdmin() && !consultation.getDoctorId().equals(actor.id())) {
             throw new ApiException(ErrorCode.NOT_RESOURCE_OWNER,
                     "Only the consulting doctor may add a prescription");
         }
@@ -154,8 +154,8 @@ public class PrescriptionService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PRESCRIPTION_NOT_FOUND,
                         "Prescription not found"));
 
-        // Ownership: a DOCTOR who is not also a PHARMACIST may cancel only their own prescriptions.
-        if (actor.hasRole(Role.DOCTOR) && !actor.hasRole(Role.PHARMACIST)) {
+        // Ownership: a DOCTOR who is not also a PHARMACIST or ADMIN may cancel only their own prescriptions.
+        if (actor.hasRole(Role.DOCTOR) && !actor.hasRole(Role.PHARMACIST) && !actor.isAdmin()) {
             ConsultationEntity consultation = consultationRepository.findById(prescription.getConsultationId())
                     .orElseThrow();
             if (!consultation.getDoctorId().equals(actor.id())) {
@@ -207,7 +207,7 @@ public class PrescriptionService {
         List<PrescriptionStatus> effective = (statuses == null || statuses.isEmpty())
                 ? List.of(PrescriptionStatus.PENDING, PrescriptionStatus.IN_PROGRESS) : statuses;
         Long number = parseNumber(prescriptionNumber);
-        UUID doctorScope = actor.hasRole(Role.PHARMACIST) ? null : actor.id();
+        UUID doctorScope = actor.hasRole(Role.PHARMACIST) || actor.isAdmin() ? null : actor.id();
 
         var result = repository.search(effective, patientId, number, doctorScope,
                 PageRequest.of(page, size, Sort.by("submittedAt").ascending().and(Sort.by("id"))));
