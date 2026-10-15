@@ -47,7 +47,7 @@ public class PatientController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<PageResponse<PatientSummary>> searchPatients(
             @RequestParam String search,
             @RequestParam(defaultValue = "0") @Min(0) int page,
@@ -58,7 +58,7 @@ public class PatientController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<PatientResponse> createPatient(
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @Valid @RequestBody CreatePatientRequest request,
@@ -73,7 +73,7 @@ public class PatientController {
     }
 
     @GetMapping("/by-number/{patientNumber}")
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<PatientResponse> getPatientByNumber(@PathVariable String patientNumber,
                                                               CurrentUser principal) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
@@ -81,7 +81,7 @@ public class PatientController {
     }
 
     @GetMapping("/{patientId}")
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<PatientResponse> getPatient(@PathVariable UUID patientId,
                                                       CurrentUser principal) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
@@ -89,7 +89,7 @@ public class PatientController {
     }
 
     @PutMapping(path = "/{patientId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<PatientResponse> updatePatient(@PathVariable UUID patientId,
                                                          @Valid @RequestBody UpdatePatientRequest request,
                                                          CurrentUser principal) {
@@ -98,7 +98,7 @@ public class PatientController {
     }
 
     @GetMapping("/{patientId}/medical-history")
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MedicalHistoryResponse> getMedicalHistory(
             @PathVariable UUID patientId,
             @RequestParam(defaultValue = "0") @Min(0) int page,
